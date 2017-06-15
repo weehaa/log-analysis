@@ -36,3 +36,22 @@ def topArticles(limit=3):
 
     db.close()
     return rows
+
+
+def topAuthors(limit=3):
+    """ Returns sorted list of `limit` authors, that get
+    the most page views with the most popular author at the top."""
+
+    db, cursor = connect()
+
+    query = """SELECT au.name, count(a.id) views FROM authors au
+               LEFT JOIN articles a ON au.id = a.author
+               GROUP BY au.name
+               ORDER BY views DESC
+               LIMIT (%s)"""
+    params = (limit,)
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+
+    db.close()
+    return rows
