@@ -55,3 +55,29 @@ def topAuthors(limit=3):
 
     db.close()
     return rows
+
+def topErrorsByDay(limit=3):
+    """ Returns sorted list of `limit` days, with http errors percentage."""
+
+    db, cursor = connect()
+
+    query = """SELECT  100.0 * SUM(CASE
+                                    WHEN l.status <> '200 OK' THEN 1
+                                    ELSE 0
+                               END)
+                               /
+                               (CASE count(l.status)
+                                    WHEN 0 THEN 1
+                                    ELSE count(l.status)
+                                END) err_pcnt,
+                    to_char(l.time, 'FMMONTH DD, YYYY') date_time
+            FROM log l
+            GROUP BY date_time
+            ORDER BY err_pcnt DESC
+            LIMIT (%s)"""
+    params = (limit,)
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+
+    db.close()
+    return rows
