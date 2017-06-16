@@ -35,7 +35,14 @@ def topArticles(limit=3):
     rows = cursor.fetchall()
 
     db.close()
-    return rows
+    print("\nThe most popular {} articles of all time:\n".format(limit))
+    i = 1
+    for row in rows:
+        print(str(i) + ". \"{title}\" - {viewsCount} views".\
+             format(title = row[0], viewsCount = row[1]))
+        i+=1
+    print("\n")
+    return
 
 
 def topAuthors(limit=3):
