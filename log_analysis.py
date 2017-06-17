@@ -26,10 +26,10 @@ def top_articles(limit=3):
 
     db_conn, cursor = connect()
 
-    query = """SELECT a.title, count(l.path) views FROM articles a
+    query = """SELECT a.title, count(l.path) FROM articles a
                LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY a.title
-               ORDER BY views DESC
+               ORDER BY count(l.path) DESC
                LIMIT (%s)"""
     params = (limit,)
     cursor.execute(query, params)
@@ -52,10 +52,10 @@ def top_authors(limit=3):
 
     db_conn, cursor = connect()
 
-    query = """SELECT au.name, count(a.id) views FROM authors au
+    query = """SELECT au.name, count(a.id) FROM authors au
                LEFT JOIN articles a ON au.id = a.author
                GROUP BY au.name
-               ORDER BY views DESC
+               ORDER BY count(a.id) DESC
                LIMIT (%s)"""
     params = (limit,)
     cursor.execute(query, params)
@@ -78,7 +78,7 @@ def errors_by_day(threshold=1):
 
     db_conn, cursor = connect()
 
-    query = """SELECT to_char(l.time, 'FMMONTH DD, YYYY') date_time,
+    query = """SELECT to_char(l.time, 'FMMONTH DD, YYYY') AS "date_time",
                         100.0 * SUM(CASE
                                     WHEN l.status <> '200 OK' THEN 1
                                     ELSE 0
@@ -87,7 +87,7 @@ def errors_by_day(threshold=1):
                                (CASE count(l.status)
                                     WHEN 0 THEN 1
                                     ELSE count(l.status)
-                                END) err_pcnt
+                                END) AS "err_pcnt"
             FROM log l
             GROUP BY date_time HAVING 100.0 * SUM(CASE
                         WHEN l.status <> '200 OK' THEN 1
