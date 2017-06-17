@@ -9,13 +9,13 @@ def connect(database_name="news"):
     """Connect to the PostgreSQL database.  Returns a database connection
     and a cursor."""
     try:
-        print('Trying to connect to `{}` database...'.format(database_name))
+        # print('Trying to connect to `{}` database...'.format(database_name))
         db_conn = psycopg2.connect("dbname={}".format(database_name))
     except psycopg2.OperationalError as db_exept:
         print('Unable to connect!\n{0}').format(db_exept)
         quit()
     else:
-        print('Connected!')
+        # print('Connected!')
         cursor = db_conn.cursor()
         return db_conn, cursor
 
