@@ -29,20 +29,17 @@ def top_articles(limit=3):
     query = """SELECT a.title, count(l.path) FROM articles a
                LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY a.title
-               ORDER BY count(l.path) DESC
-               LIMIT (%s)"""
-    params = (limit,)
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
+               ORDER BY count(l.path) DESC"""
+    cursor.execute(query)
 
-    db_conn.close()
     print("\nThe most popular {} articles of all time:\n".format(limit))
-    i = 1
-    for row in rows:
+    row_cnt = limit if limit else cursor.rowcount
+    for i in range(1, row_cnt+1):
+        row = cursor.next()
         print(str(i) + ". \"{title}\" - {viewsCount} views".
               format(title=row[0], viewsCount=row[1]))
-        i += 1
     print
+    db_conn.close()
     return
 
 
