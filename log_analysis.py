@@ -66,6 +66,14 @@ def topAuthors(limit=3):
 
     db.close()
     return rows
+    print("\nThe most popular {} authors of all time:\n".format(limit))
+    i = 1
+    for row in rows:
+        print(str(i) + ". {author} - {viewsCount} views".
+              format(author=row[0], viewsCount=row[1]))
+        i += 1
+    print
+    return
 
 def topErrorsByDay(limit=3):
     """ Returns sorted list of `limit` days, with http errors percentage."""
