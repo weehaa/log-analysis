@@ -113,3 +113,7 @@ def errors_by_day(threshold=1):
               format(day=row[0], errPcnt=round(row[1], 1)))
     print
     return
+
+top_articles()
+top_authors()
+errors_by_day()
