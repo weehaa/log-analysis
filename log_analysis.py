@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-#
-# log_analysis.py -- reporting tool that prints reports in plain text
-# based on the data in the `news` database
-#
+""" This module is a plain text reporting tool that prints reports
+based on the data from the `news` database"""
 
 import psycopg2
 
@@ -11,19 +9,22 @@ def connect(database_name="news"):
     """Connect to the PostgreSQL database.  Returns a database connection
     and a cursor."""
     try:
-        db = psycopg2.connect("dbname={}".format(database_name))
-        cursor = db.cursor()
-        return db, cursor
-    except:
-        print("ERROR: Can't connect to {} database".format(database_name))
+        print('Trying to connect to `{}` database...'.format(database_name))
+        db_conn = psycopg2.connect("dbname={}".format(database_name))
+    except psycopg2.OperationalError as db_exept:
+        print('Unable to connect!\n{0}').format(db_exept)
         quit()
+    else:
+        print('Connected!')
+        cursor = db_conn.cursor()
+        return db_conn, cursor
 
 
 def top_articles(limit=3):
-    """ Returns sorted list of `limit` popular articles
+    """ Prints sorted list of `limit` popular articles
     with the most popular article at the top."""
 
-    db, cursor = connect()
+    db_conn, cursor = connect()
 
     query = """SELECT a.title, count(l.path) views FROM articles a
                LEFT JOIN log l ON l.path = '/article/'||a.slug
@@ -34,7 +35,7 @@ def top_articles(limit=3):
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
-    db.close()
+    db_conn.close()
     print("\nThe most popular {} articles of all time:\n".format(limit))
     i = 1
     for row in rows:
@@ -46,10 +47,10 @@ def top_articles(limit=3):
 
 
 def top_authors(limit=3):
-    """ Returns sorted list of `limit` authors, that get
+    """ Prints sorted list of `limit` authors, that get
     the most page views with the most popular author at the top."""
 
-    db, cursor = connect()
+    db_conn, cursor = connect()
 
     query = """SELECT au.name, count(a.id) views FROM authors au
                LEFT JOIN articles a ON au.id = a.author
@@ -60,7 +61,7 @@ def top_authors(limit=3):
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
-    db.close()
+    db_conn.close()
     print("\nThe most popular {} authors of all time:\n".format(limit))
     i = 1
     for row in rows:
@@ -72,10 +73,10 @@ def top_authors(limit=3):
 
 
 def errors_by_day(threshold=1):
-    """ Returns sorted list of days, when percentage of http errors
+    """ Prints sorted list of days, which percentage of http errors
     was more than the threshold."""
 
-    db, cursor = connect()
+    db_conn, cursor = connect()
 
     query = """SELECT to_char(l.time, 'FMMONTH DD, YYYY') date_time,
                         100.0 * SUM(CASE
@@ -102,7 +103,7 @@ def errors_by_day(threshold=1):
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
-    db.close()
+    db_conn.close()
     print("\nDays when more than {}% of requests lead to errors:\n".
           format(threshold))
     for row in rows:
