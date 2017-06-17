@@ -42,6 +42,10 @@ def topArticles(limit=3):
              format(title = row[0], viewsCount = row[1]))
         i+=1
     print("\n")
+        print(str(i) + ". \"{title}\" - {viewsCount} views".
+              format(title=row[0], viewsCount=row[1]))
+        i += 1
+    print
     return
 
 
