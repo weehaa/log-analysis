@@ -38,10 +38,6 @@ def topArticles(limit=3):
     print("\nThe most popular {} articles of all time:\n".format(limit))
     i = 1
     for row in rows:
-        print(str(i) + ". \"{title}\" - {viewsCount} views".\
-             format(title = row[0], viewsCount = row[1]))
-        i+=1
-    print("\n")
         print(str(i) + ". \"{title}\" - {viewsCount} views".
               format(title=row[0], viewsCount=row[1]))
         i += 1
@@ -65,7 +61,6 @@ def topAuthors(limit=3):
     rows = cursor.fetchall()
 
     db.close()
-    return rows
     print("\nThe most popular {} authors of all time:\n".format(limit))
     i = 1
     for row in rows:
@@ -75,12 +70,15 @@ def topAuthors(limit=3):
     print
     return
 
-def topErrorsByDay(limit=3):
-    """ Returns sorted list of `limit` days, with http errors percentage."""
+
+def errorsByDay(threshold=1):
+    """ Returns sorted list of days, when percentage of http errors
+    was more than the threshold."""
 
     db, cursor = connect()
 
-    query = """SELECT  100.0 * SUM(CASE
+    query = """SELECT to_char(l.time, 'FMMONTH DD, YYYY') date_time,
+                        100.0 * SUM(CASE
                                     WHEN l.status <> '200 OK' THEN 1
                                     ELSE 0
                                END)
@@ -88,15 +86,27 @@ def topErrorsByDay(limit=3):
                                (CASE count(l.status)
                                     WHEN 0 THEN 1
                                     ELSE count(l.status)
-                                END) err_pcnt,
-                    to_char(l.time, 'FMMONTH DD, YYYY') date_time
+                                END) err_pcnt
             FROM log l
-            GROUP BY date_time
-            ORDER BY err_pcnt DESC
-            LIMIT (%s)"""
-    params = (limit,)
+            GROUP BY date_time HAVING 100.0 * SUM(CASE
+                        WHEN l.status <> '200 OK' THEN 1
+                        ELSE 0
+                   END)
+                   /
+                   (CASE count(l.status)
+                        WHEN 0 THEN 1
+                        ELSE count(l.status)
+                    END) > (%s)
+            ORDER BY err_pcnt DESC"""
+    params = (threshold,)
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
     db.close()
-    return rows
+    print("\nDays when more than {}% of requests lead to errors:\n".
+          format(threshold))
+    for row in rows:
+        print("{day} - {errPcnt}% errors".
+              format(day=row[0], errPcnt=round(row[1], 1)))
+    print
+    return
