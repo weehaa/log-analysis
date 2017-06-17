@@ -16,7 +16,9 @@ To run this project, first you'll need database software (provided by a Linux vi
 3. On which days did more than 1% of requests lead to errors?
     - use `errors_by_day()` function
 
-### Run example
+### Run
+Execute `python log_analysis.py` to run all the reports at once,
+#### OR run one of the reports:
 - Run a python interpreter `python`.
 - Type `import log_analysis as l`
 - Execute a function `l.errors_by_day()`
