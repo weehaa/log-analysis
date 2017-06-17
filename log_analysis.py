@@ -46,23 +46,22 @@ def top_articles(limit=3):
     return
 
 
-def top_authors(limit=3):
+def top_authors():
     """ Prints sorted list of `limit` authors, that get
     the most page views with the most popular author at the top."""
 
     db_conn, cursor = connect()
 
-    query = """SELECT au.name, count(a.id) FROM authors au
+    query = """SELECT au.name, count(l.path) FROM authors au
                LEFT JOIN articles a ON au.id = a.author
+               LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY au.name
-               ORDER BY count(a.id) DESC
-               LIMIT (%s)"""
-    params = (limit,)
-    cursor.execute(query, params)
+               ORDER BY count(a.id) DESC"""
+    cursor.execute(query)
     rows = cursor.fetchall()
 
     db_conn.close()
-    print("\nThe most popular {} authors of all time:\n".format(limit))
+    print("\nThe most popular authors of all time:\n")
     i = 1
     for row in rows:
         print(str(i) + ". {author} - {viewsCount} views".
