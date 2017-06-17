@@ -19,7 +19,7 @@ def connect(database_name="news"):
         quit()
 
 
-def topArticles(limit=3):
+def top_articles(limit=3):
     """ Returns sorted list of `limit` popular articles
     with the most popular article at the top."""
 
@@ -45,7 +45,7 @@ def topArticles(limit=3):
     return
 
 
-def topAuthors(limit=3):
+def top_authors(limit=3):
     """ Returns sorted list of `limit` authors, that get
     the most page views with the most popular author at the top."""
 
@@ -71,7 +71,7 @@ def topAuthors(limit=3):
     return
 
 
-def errorsByDay(threshold=1):
+def errors_by_day(threshold=1):
     """ Returns sorted list of days, when percentage of http errors
     was more than the threshold."""
 
