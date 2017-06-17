@@ -74,7 +74,7 @@ def top_authors(limit=3):
 
 def errors_by_day(threshold=1):
     """ Prints sorted list of days, which percentage of http errors
-    was more than the threshold."""
+    was more than the threshold (1% by default)."""
 
     db_conn, cursor = connect()
 
@@ -99,11 +99,13 @@ def errors_by_day(threshold=1):
                         ELSE count(l.status)
                     END) > (%s)
             ORDER BY err_pcnt DESC"""
+
     params = (threshold,)
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
     db_conn.close()
+
     print("\nDays when more than {}% of requests lead to errors:\n".
           format(threshold))
     for row in rows:
