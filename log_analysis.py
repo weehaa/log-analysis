@@ -18,7 +18,7 @@ def connect(database_name="news"):
         # print('Connected!')
         cursor = db_conn.cursor()
         return db_conn, cursor
-
+        
 
 def top_articles(limit=3):
     """ Prints sorted list of `limit` popular articles
@@ -74,27 +74,30 @@ def errors_by_day(threshold=1):
 
     db_conn, cursor = connect()
 
-    query = """SELECT to_char(l.time, 'FMMONTH DD, YYYY') AS "date_time",
-                        100.0 * SUM(CASE
-                                    WHEN l.status <> '200 OK' THEN 1
-                                    ELSE 0
-                               END)
-                               /
-                               (CASE count(l.status)
-                                    WHEN 0 THEN 1
-                                    ELSE count(l.status)
-                                END) AS "err_pcnt"
-            FROM log l
-            GROUP BY date_time HAVING 100.0 * SUM(CASE
-                        WHEN l.status <> '200 OK' THEN 1
-                        ELSE 0
-                   END)
-                   /
-                   (CASE count(l.status)
-                        WHEN 0 THEN 1
-                        ELSE count(l.status)
-                    END) > (%s)
-            ORDER BY err_pcnt DESC"""
+    query = """SELECT to_char(date, 'FMMONTH DD, YYYY') AS "date",
+                err_pcnt from
+                (SELECT date_trunc('day', l.time) AS "date",
+                            100.0 * SUM(CASE
+                                        WHEN l.status <> '200 OK' THEN 1
+                                        ELSE 0
+                                   END)
+                                   /
+                                   (CASE count(l.status)
+                                        WHEN 0 THEN 1
+                                        ELSE count(l.status)
+                                    END) AS "err_pcnt"
+                FROM log l
+                GROUP BY date HAVING 100.0 * SUM(CASE
+                            WHEN l.status <> '200 OK' THEN 1
+                            ELSE 0
+                       END)
+                       /
+                       (CASE count(l.status)
+                            WHEN 0 THEN 1
+                            ELSE count(l.status)
+                        END) > (%s)
+                ORDER BY err_pcnt DESC) AS "err_info"
+                """
 
     params = (threshold,)
     cursor.execute(query, params)
