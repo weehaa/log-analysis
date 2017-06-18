@@ -36,32 +36,42 @@ def connect(database_name="news"):
         return db_conn, cursor
 
 
+def get_query_results(query, params=None):
+    """ Connects to a database, executes query and returns a result """
+    # connect to database and grab cursor
+    db_conn, cursor = connect()
+    # execute
+    cursor.execute(query, params)
+    result = cursor.fetchall()
+    # close connection
+    db_conn.close()
+    # return results
+    return result
+
+
 @is_pos_integer
 def top_articles(limit):
     """ Prints sorted list of `limit` popular articles
     and their number of views with the most popular article at the top.
     If limit is set to 0, prints all the articles"""
 
-    db_conn, cursor = connect()
-
     query = """SELECT a.title, count(l.path) FROM articles a
                LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY a.title
                ORDER BY count(l.path) DESC"""
-    cursor.execute(query)
+
+    rows = get_query_results(query)
 
     print("\nThe most popular {} articles of all time:\n".
           format(limit if limit else "all"))
 
     # if limit = 0 then return all rows
-    row_cnt = limit if limit else cursor.rowcount
+    row_cnt = limit if limit else len(rows)
 
-    for i in range(1, row_cnt+1):
-        row = cursor.next()
-        print(str(i) + ". \"{title}\" - {viewsCount} views".
-              format(title=row[0], viewsCount=row[1]))
+    for i in range(row_cnt):
+        print(str(i+1) + ". \"{title}\" - {viewsCount} views".
+              format(title=rows[i][0], viewsCount=rows[i][1]))
     print
-    db_conn.close()
     return
 
 
@@ -71,14 +81,12 @@ def top_authors(limit):
     the most page views with the most popular author at the top.
     If `limit` is set to 0, prints all the authors"""
 
-    db_conn, cursor = connect()
-
     query = """SELECT au.name, count(l.path) FROM authors au
                LEFT JOIN articles a ON au.id = a.author
                LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY au.name
                ORDER BY count(a.id) DESC"""
-    cursor.execute(query)
+    rows = get_query_results(query, params=None)
 
     print("\nThe most popular {} authors of all time:\n".
           format(limit if limit else ""))
