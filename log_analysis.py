@@ -140,7 +140,3 @@ def errors_by_day(threshold):
               format(day=row[0], errPcnt=round(row[1], 1)))
     print
     return
-
-top_articles(3)
-top_authors(0)
-errors_by_day(1)
