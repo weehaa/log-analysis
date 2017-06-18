@@ -94,9 +94,10 @@ def top_authors(limit):
     return
 
 
-def errors_by_day(threshold=1):
+@is_pos_integer
+def errors_by_day(threshold):
     """ Prints sorted list of days, which percentage of http errors
-    was more than the threshold (1% by default)."""
+    was more than the threshold."""
 
     db_conn, cursor = connect()
 
