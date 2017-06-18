@@ -39,7 +39,8 @@ def connect(database_name="news"):
 @is_pos_integer
 def top_articles(limit):
     """ Prints sorted list of `limit` popular articles
-    with the most popular article at the top."""
+    and their number of views with the most popular article at the top.
+    If limit is set to 0, prints all the articles"""
 
     db_conn, cursor = connect()
 
