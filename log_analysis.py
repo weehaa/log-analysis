@@ -106,8 +106,6 @@ def errors_by_day(threshold):
     """ Prints sorted list of days, which percentage of http errors
     was more than the threshold."""
 
-    db_conn, cursor = connect()
-
     query = """SELECT to_char(date, 'FMMONTH DD, YYYY') AS "date",
                 err_pcnt from
                 (SELECT date_trunc('day', l.time) AS "date",
@@ -132,12 +130,8 @@ def errors_by_day(threshold):
                         END) > (%s)
                 ORDER BY err_pcnt DESC) AS "err_info"
                 """
-
     params = (threshold,)
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-
-    db_conn.close()
+    rows = get_query_results(query, params)
 
     print("\nDays when more than {}% of requests lead to errors:\n".
           format(threshold))
