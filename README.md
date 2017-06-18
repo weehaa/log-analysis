@@ -8,16 +8,16 @@ To run this project, first you'll need database software (provided by a Linux vi
 
 ### What are we reporting?
 1. What are the most popular three articles of all time?
-    - use `top_articles(3)` function. Argument is a number of articles to return. Type 0 if you want to see all of them.
+    - use `top_articles(3)` function. Argument is a number of articles to print out. Type 0 if you want to see all of them.
 
 2. Who are the most popular article authors of all time?
-    - use `top_authors(0)` function.  Argument is a number of authors to return. Type 0 if you want to see all of them.
+    - use `top_authors(0)` function.  Argument is a number of authors to print out. Type 0 if you want to see all of them.
 
 3. On which days did more than 1% of requests lead to errors?
     - use `errors_by_day(1)` function.  Argument is a errors percentage threshold.
 
 ### Run
-Execute `python log_analysis.py` to run all the reports at once,
+Execute `python run_reports.py` to run all the reports at once,
 #### OR run one of the reports:
 - Run a python interpreter `python`.
 - Type `import log_analysis as l`
