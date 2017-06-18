@@ -1,2 +1,2 @@
-newsdata.sql
-log_analysis.pyc
+*.sql
+*.pyc
