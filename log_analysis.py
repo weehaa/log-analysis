@@ -140,6 +140,6 @@ def errors_by_day(threshold):
     print
     return
 
-top_articles()
-top_authors()
-errors_by_day()
+top_articles(3)
+top_authors(0)
+errors_by_day(1)
