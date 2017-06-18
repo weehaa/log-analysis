@@ -64,10 +64,11 @@ def top_articles(limit):
     db_conn.close()
     return
 
-
-def top_authors():
+@is_pos_integer
+def top_authors(limit):
     """ Prints sorted list of `limit` authors, that get
-    the most page views with the most popular author at the top."""
+    the most page views with the most popular author at the top.
+    If `limit` is set to 0, prints all the authors"""
 
     db_conn, cursor = connect()
 
@@ -77,16 +78,19 @@ def top_authors():
                GROUP BY au.name
                ORDER BY count(a.id) DESC"""
     cursor.execute(query)
-    rows = cursor.fetchall()
 
-    db_conn.close()
-    print("\nThe most popular authors of all time:\n")
-    i = 1
-    for row in rows:
+    print("\nThe most popular {} authors of all time:\n".
+            format(limit if limit else ""))
+
+    # if limit = 0 then return all rows
+    row_cnt = limit if limit else cursor.rowcount
+
+    for i in range(1, row_cnt+1):
+        row = cursor.next()
         print(str(i) + ". {author} - {viewsCount} views".
               format(author=row[0], viewsCount=row[1]))
-        i += 1
     print
+    db_conn.close()
     return
 
 
