@@ -7,14 +7,14 @@ from functools import wraps
 
 
 def is_pos_integer(func):
-    '''Check that argument is an non-negative integer'''
+    '''Check that argument is a non-negative integer'''
     @wraps(func)
     def decorated_function(arg):
         try:
             int(' ') if arg < 0 else int(arg)
         except ValueError:
             print ("ERROR: \"" + str(arg) + "\" is not a valid argument for " +
-                    func.__name__ + " function, please type 0,1,2,3...")
+                   func.__name__ + " function, please type 0,1,2,3...")
             return
         else:
             return func(arg)
@@ -51,7 +51,7 @@ def top_articles(limit):
     cursor.execute(query)
 
     print("\nThe most popular {} articles of all time:\n".
-            format(limit if limit else "all"))
+          format(limit if limit else "all"))
 
     # if limit = 0 then return all rows
     row_cnt = limit if limit else cursor.rowcount
@@ -63,6 +63,7 @@ def top_articles(limit):
     print
     db_conn.close()
     return
+
 
 @is_pos_integer
 def top_authors(limit):
@@ -80,7 +81,7 @@ def top_authors(limit):
     cursor.execute(query)
 
     print("\nThe most popular {} authors of all time:\n".
-            format(limit if limit else ""))
+          format(limit if limit else ""))
 
     # if limit = 0 then return all rows
     row_cnt = limit if limit else cursor.rowcount
