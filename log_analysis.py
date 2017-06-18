@@ -27,8 +27,8 @@ def connect(database_name="news"):
     try:
         # print('Trying to connect to `{}` database...'.format(database_name))
         db_conn = psycopg2.connect("dbname={}".format(database_name))
-    except psycopg2.OperationalError as db_exept:
-        print('Unable to connect!\n{0}').format(db_exept)
+    except psycopg2.OperationalError as db_except:
+        print('Unable to connect!\n{0}').format(db_except)
         quit()
     else:
         # print('Connected!')
