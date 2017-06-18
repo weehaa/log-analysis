@@ -34,9 +34,10 @@ def connect(database_name="news"):
         # print('Connected!')
         cursor = db_conn.cursor()
         return db_conn, cursor
-        
 
-def top_articles(limit=3):
+
+@is_pos_integer
+def top_articles(limit):
     """ Prints sorted list of `limit` popular articles
     with the most popular article at the top."""
 
@@ -48,8 +49,12 @@ def top_articles(limit=3):
                ORDER BY count(l.path) DESC"""
     cursor.execute(query)
 
-    print("\nThe most popular {} articles of all time:\n".format(limit))
+    print("\nThe most popular {} articles of all time:\n".
+            format(limit if limit else "all"))
+
+    # if limit = 0 then return all rows
     row_cnt = limit if limit else cursor.rowcount
+
     for i in range(1, row_cnt+1):
         row = cursor.next()
         print(str(i) + ". \"{title}\" - {viewsCount} views".
