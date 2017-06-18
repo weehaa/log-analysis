@@ -3,6 +3,22 @@
 based on the data from the `news` database"""
 
 import psycopg2
+from functools import wraps
+
+
+def is_pos_integer(func):
+    '''Check that argument is an non-negative integer'''
+    @wraps(func)
+    def decorated_function(arg):
+        try:
+            int(' ') if arg < 0 else int(arg)
+        except ValueError:
+            print ("ERROR: \"" + str(arg) + "\" is not a valid argument for " +
+                    func.__name__ + " function, please type 0,1,2,3...")
+            return
+        else:
+            return func(arg)
+    return decorated_function
 
 
 def connect(database_name="news"):
