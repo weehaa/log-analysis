@@ -86,20 +86,18 @@ def top_authors(limit):
                LEFT JOIN log l ON l.path = '/article/'||a.slug
                GROUP BY au.name
                ORDER BY count(a.id) DESC"""
-    rows = get_query_results(query, params=None)
+    rows = get_query_results(query)
 
     print("\nThe most popular {} authors of all time:\n".
           format(limit if limit else ""))
 
     # if limit = 0 then return all rows
-    row_cnt = limit if limit else cursor.rowcount
+    row_cnt = limit if limit else len(rows)
 
-    for i in range(1, row_cnt+1):
-        row = cursor.next()
-        print(str(i) + ". {author} - {viewsCount} views".
-              format(author=row[0], viewsCount=row[1]))
+    for i in range(row_cnt):
+        print(str(i+1) + ". {author} - {viewsCount} views".
+              format(author=rows[i][0], viewsCount=rows[i][1]))
     print
-    db_conn.close()
     return
 
 
